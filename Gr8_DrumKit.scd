@@ -2,7 +2,6 @@ s.options.numInputBusChannels.postln;
 ~numSamples = 4;
 ~numChannels = ~numSamples*2;
 
-
 //DEFINE SAMPLE PATHS
 (
 ~kickSamplePath = "D:/Polidocumenti/Anno 5/CMLS/HW3/Gr8_DrumKit/Samples/Kick.wav";
@@ -28,7 +27,7 @@ s.options.numInputBusChannels.postln;
 
 
 
-~bus = Bus.audio(s, numChannels);
+~bus = Bus.audio(s, ~numChannels);
 
 ~loadSample = {
 	arg samplePath;
@@ -146,16 +145,30 @@ MIDIIn.connectAll;
 (
 var hh, sn, kc, ce, tom, knob_names, buttons4keys, drum_kit_win;
 var hh_knobs, sn_knobs, kc_knobs, ce_knobs, tom_knobs;
-~q_temp; ~ffreq_hh_temp; ~amp_hh_temp;
-~sinfreq_temp; ~ffreq_sn_temp; ~amp_sn_temp;
-~start_temp; ~amp_kc_temp;
-~value_temp; ~amp_clap_e_temp;
-~pitchRel_temp; ~startPitch_temp; ~amp_tom_temp; ~keys2synth;
+~q_temp = 0.59219532012939;
+~ffreq_hh_temp = 9853;
+~amp_hh_temp = 0.125;
+
+~sinfreq_temp = 180;
+~ffreq_sn_temp = 2000;
+~amp_sn_temp = 0.25;
+
+~start_temp = 472;
+~amp_kc_temp = 0.5;
+
+~value_temp = 7600;
+~amp_clap_e_temp = 0.125;
+
+~pitchRel_temp = 0.361;
+~startPitch_temp = 124;
+~amp_tom_temp = 0.25;
+
+~keys2synth;
 
 
-knob_names = Array2D.new(8, 3);
-buttons4keys = Array.newClear(8);
-~keys2synth = Array.newClear(8);
+knob_names = Array2D.new(5, 3);
+buttons4keys = Array.newClear(5);
+~keys2synth = Array.newClear(5);
 
 drum_kit_win = Window.new(name: "DRUM KIT", bounds:Rect(100,220,810,500)).background_(Color.grey(0.6)).front;
 
@@ -213,14 +226,14 @@ hh_knobs[1].value = 9853/15000;
 hh_knobs[1].action = {~ffreq_hh_temp = hh_knobs[1].value.linlin(0, 1, 100, 15000);
 						postln(~ffreq_hh_temp);
 					};
-knob_names[1,1] =  StaticText(drum_kit_win,Rect(35+100,170+100,90,30)).string_("F_FREQ");
+knob_names[0,1] =  StaticText(drum_kit_win,Rect(35+100,170+100,90,30)).string_("F_FREQ");
 
 hh_knobs[2] = Knob(drum_kit_win,Rect(115,300,80,80));
 hh_knobs[2].value = 0.3/3;
 hh_knobs[2].action = {~amp_hh_temp = hh_knobs[2].value.linexp(0, 1, 0.01, 3);
 						postln(~amp_hh_temp);
 					};
-knob_names[1,2] =  StaticText(drum_kit_win,Rect(40+100,170+200,90,30)).string_("AMP");
+knob_names[0,2] =  StaticText(drum_kit_win,Rect(40+100,170+200,90,30)).string_("AMP");
 
 
 
@@ -251,21 +264,21 @@ sn_knobs[0].value = 180/1000;
 sn_knobs[0].action = {~sinfreq_temp = sn_knobs[0].value.linlin(0, 1, 0, 1000);
 						postln(~sinfreq_temp);
 					};
-knob_names[2,0] =  StaticText(drum_kit_win,Rect(25+200,170,90,30)).string_("SIN_FREQ");
+knob_names[1,0] =  StaticText(drum_kit_win,Rect(25+200,170,90,30)).string_("SIN_FREQ");
 
 sn_knobs[1] = Knob(drum_kit_win,Rect(215,200,80,80));
 sn_knobs[1].value = 2000/5000;
 sn_knobs[1].action = {~ffreq_sn_temp = sn_knobs[1].value.linlin(0, 1, 100, 5000);
 						postln(~ffreq_sn_temp);
 					};
-knob_names[2,1] =  StaticText(drum_kit_win,Rect(33+200,170+100,90,30)).string_("F_FREQ");
+knob_names[1,1] =  StaticText(drum_kit_win,Rect(33+200,170+100,90,30)).string_("F_FREQ");
 
 sn_knobs[2] = Knob(drum_kit_win,Rect(215,300,80,80));
 sn_knobs[2].value = 0.1/2;
 sn_knobs[2].action = {~amp_sn_temp = sn_knobs[2].value.linexp(0, 1, 0.01, 2);
 						postln(~amp_sn_temp);
 					};
-knob_names[2,2] =  StaticText(drum_kit_win,Rect(40+200,170+200,90,30)).string_("AMP");
+knob_names[1,2] =  StaticText(drum_kit_win,Rect(40+200,170+200,90,30)).string_("AMP");
 
 
 
@@ -295,14 +308,14 @@ kc_knobs[0].value = 472/2000;
 kc_knobs[0].action = {~start_temp = kc_knobs[0].value.linlin(0, 1, 40, 2000);
 						postln(~start_temp);
 					};
-knob_names[4,0] =  StaticText(drum_kit_win,Rect(18+400,170,90,30)).string_("START_FREQ");
+knob_names[2,0] =  StaticText(drum_kit_win,Rect(18+400,170,90,30)).string_("START_FREQ");
 
 kc_knobs[1] = Knob(drum_kit_win,Rect(415,300,80,80));
 kc_knobs[1].value = 0.1/2;
 kc_knobs[1].action = {~amp_kc_temp = kc_knobs[1].value.linexp(0, 1, 0.01, 2);
 						postln(~amp_kc_temp);
 					};
-knob_names[4,1] =  StaticText(drum_kit_win,Rect(40+400,170+200,90,30)).string_("AMP");
+knob_names[2,1] =  StaticText(drum_kit_win,Rect(40+400,170+200,90,30)).string_("AMP");
 
 
 
@@ -333,14 +346,14 @@ ce_knobs[0].value = 7600/9000;
 ce_knobs[0].action = {~value_temp = ce_knobs[0].value.linlin(0, 1, 200, 9000);
 						postln(~value_temp);
 					};
-knob_names[6,0] =  StaticText(drum_kit_win,Rect(15+600,170,90,30)).string_("VALUE_FREQ");
+knob_names[3,0] =  StaticText(drum_kit_win,Rect(15+600,170,90,30)).string_("VALUE_FREQ");
 
 ce_knobs[1] = Knob(drum_kit_win,Rect(615,300,80,80));
 ce_knobs[1].value = 0.5/3.5;
 ce_knobs[1].action = {~amp_clap_e_temp = ce_knobs[1].value.linexp(0, 1, 0.01, 3.5);
 						postln(~amp_clap_e_temp);
 					};
-knob_names[6,1] =  StaticText(drum_kit_win,Rect(40+600,170+200,90,30)).string_("AMP");
+knob_names[3,1] =  StaticText(drum_kit_win,Rect(40+600,170+200,90,30)).string_("AMP");
 
 
 
@@ -371,27 +384,80 @@ tom_knobs[0].value = 1000/3000;
 tom_knobs[0].action = {~startPitch_temp = tom_knobs[0].value.linlin(0, 1, 100, 3000);
 						postln(~startPitch_temp);
 					};
-knob_names[7,0] =  StaticText(drum_kit_win,Rect(18+700,170,90,30)).string_("START_PITCH");
+knob_names[4,0] =  StaticText(drum_kit_win,Rect(18+700,170,90,30)).string_("START_PITCH");
 
 tom_knobs[1] = Knob(drum_kit_win,Rect(715,200,80,80));
 tom_knobs[1].value = 0.11/1;
 tom_knobs[1].action = {~pitchRel_temp = tom_knobs[1].value.linlin(0, 1, 0, 1);
 						postln(~pitchRel_temp);
 					};
-knob_names[7,1] =  StaticText(drum_kit_win,Rect(23+700,170+100,90,30)).string_("PITCH_REL");
+knob_names[4,1] =  StaticText(drum_kit_win,Rect(23+700,170+100,90,30)).string_("PITCH_REL");
 
 tom_knobs[2] = Knob(drum_kit_win,Rect(715,300,80,80));
 tom_knobs[2].value = 0.1/3;
 tom_knobs[2].action = {~amp_tom_temp = tom_knobs[2].value.linexp(0, 1, 0.01, 3);
 						postln(~amp_tom_temp);
 					};
-knob_names[7,2] =  StaticText(drum_kit_win,Rect(40+700,170+200,90,30)).string_("AMP");
+knob_names[4,2] =  StaticText(drum_kit_win,Rect(40+700,170+200,90,30)).string_("AMP");
 
 
 )
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////---SERIAL PORT SETTING---/////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+SerialPort.devices;
+//MISSING PORT
+~port = SerialPort.new("COM3", 9600);
+
+
+
+(
+~playCommand = $d;
+~sonar = $s;
+~fotoResistor = $f;
+~potentiometer = $p;
+~charArray = [ ];
+~getValues = Routine.new(
+	{
+		var ascii;
+		{
+			ascii = ~port.read.asAscii;
+			switch (ascii,
+				~playCommand,   {
+					~charArray = [ ];
+					ascii = ~port.read.asAscii;
+					~charArray.add(ascii);
+					~val1 = ~charArray.collect(_.digit).convertDigits;
+					//////////////////////////////////////////////////FIND A WAY TO PLAY THE RIGHT PERCUSSION
+				},
+				~sonar, { \wrong },
+				~fotoResistor, { \wrong },
+				~potentiometer, { \wrong }
+			);
+			if(ascii.isDecDigit,{~charArray = ~charArray.add(ascii)});
+			if(ascii == $d,{
+				~val1 = ~charArray.collect(_.digit).convertDigits;
+				~charArray = [ ];
+				}
+			);
+		}.loop;
+
+	}
+).play;
+)
 
 ~bpm = 100;
+
+switch (ascii,
+	$a, {},
+
+);
+
+(
+
+)
 
 (
 Pdef(\kickpat,
