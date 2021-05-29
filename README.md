@@ -18,6 +18,6 @@ Sounds are generated in the SuperCollider framework through Synth Definitions. O
 
 To better perform the Sound Synthesis, some parameters of the Synths can be modified in real-time by the user.
 
-We set up an Arduino circuit that can send the messages to SuperCollider to play the respective drums and also change parameters. The parameters are controlled by two methods: two potentiometers and one photoresistor. The first method is through changing the potentiometers’ values by rotating them.
+We set up an Arduino circuit that can send the messages to SuperCollider to play the respective drums and also change parameters. The parameters are controlled by two methods: two potentiometers and one photoresistor.
 
 To allow the communication between SuperCollider and Arduino, we used the serial port communication.
