@@ -442,15 +442,15 @@ SerialPort.devices;
 ~getValues = Routine.new(
 	{
 		var ascii;
-		var x;
+		var state;
 		ascii = ~commands.choose;
 		ascii.postln;
-		//{
+		{
 			//ascii = ~port.read.asAscii;
-		ascii = ~playCommand;
+			ascii = ~playCommand;
 			switch (ascii,
 
-				~playCommand,   {
+				~playCommand,   { state = ~playCommand;
 					~charArray = [ ];
 					//ascii = ~port.read.asAscii;
 					~charArray.add(ascii);
@@ -489,13 +489,14 @@ SerialPort.devices;
 					//////////////////////////////////////////////////FIND A WAY TO PLAY THE RIGHT PERCUSSION
 				},
 
-				~sonar, { ~sonar.postln; },
+				~sonar, { state = ~sonar; },
 
-				~fotoResistor, { ~fotoResistor.postln; },
+				~fotoResistor, { state = ~fotoResistor; },
 
-				~potentiometer, { ~potentiometer.postln; }
+				~potentiometer, { state = ~potentiometer; }
 			);
-		//}.loop;
+
+		}.loop;
 
 	}
 ).play;
