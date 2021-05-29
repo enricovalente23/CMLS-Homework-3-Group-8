@@ -199,7 +199,7 @@ sn.mouseDownAction = {
 
 ~sn_knobs[0] = Knob(drum_kit_win,Rect(140,130,80,80));
 ~sn_knobs[0].value = ~sinfreq_temp/1000;
-~sn_knobs[0].action = {~sinfreq_temp = ~sn_knobs[0].value.linlin(0, 1, 0, 1000);
+~sn_knobs[0].action = {~sinfreq_temp = ~sn_knobs[0].value.linexp(0, 1, 80, 1000);
 						postln(~sinfreq_temp);
 					};
 knob_names[1,0] = StaticText(drum_kit_win,Rect(25+120,200,90,30)).string_("SN_Release");
@@ -274,8 +274,8 @@ tom.mouseDownAction = {
 ~tom_knobs = Array.newClear(2);
 
 ~tom_knobs[0] = Knob(drum_kit_win,Rect(470,130,80,80));
-~tom_knobs[0].value = ~startPitch_temp/3000;
-~tom_knobs[0].action = {~startPitch_temp = ~tom_knobs[0].value.linlin(0, 1, 100, 3000);
+~tom_knobs[0].value = ~startPitch_temp/2000;
+~tom_knobs[0].action = {~startPitch_temp = ~tom_knobs[0].value.linexp(0, 1, 100, 2000);
 						postln(~startPitch_temp);
 					};
 knob_names[4,0] = StaticText(drum_kit_win,Rect(18+460,200,90,30)).string_("Tom_Start");
@@ -304,7 +304,7 @@ knob_names[4,1] = StaticText(drum_kit_win,Rect(40+455,200+120,90,30)).string_("A
 ~charArray = [ ];
 
 //Hardware range values
-~fotoresistorMin = 0;
+~fotoresistorMin = 60;
 ~fotoresistorMax = 680;
 ~potentiometerMin = 0;
 ~potentiometerMax = 680;
@@ -431,6 +431,7 @@ SerialPort.devices;
 						~fotoResistor, {
 							var value;
 							~val1 = ~charArray.collect(_.digit).convertDigits;
+
 							value = ~val1.linexp(~fotoresistorMin, ~fotoresistorMax, 0.01, 1);
 							~charArray = [ ];
 						},
@@ -460,6 +461,16 @@ SerialPort.devices;
 							var value;
 							~val1 = ~charArray.collect(_.digit).convertDigits;
 							value = ~val1.linexp(~kPotentiometerMin, ~kPotentiometerMax, 0.01, 1);
+
+							~sn_knobs[0].value = value;
+							~sinfreq_temp = ~sn_knobs[0].value.linexp(0, 1, 80, 1000);
+
+							~kc_knobs[0].value = value;
+							~start_temp = ~kc_knobs[0].value.linlin(0, 1, 40, 2000);
+
+							~tom_knobs[0].value = value;
+							~startPitch_temp = ~tom_knobs[0].value.linexp(0, 1, 100, 2000);
+
 							~charArray = [ ];
 						}
 					)
