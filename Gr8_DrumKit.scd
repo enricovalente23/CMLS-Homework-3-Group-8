@@ -431,8 +431,14 @@ SerialPort.devices;
 						~fotoResistor, {
 							var value;
 							~val1 = ~charArray.collect(_.digit).convertDigits;
-
 							value = ~val1.linexp(~fotoresistorMin, ~fotoresistorMax, 0.01, 1);
+
+							~hh_knobs[0].value = value;
+							~ffreq_hh_temp = ~hh_knobs[0].value.linlin(0, 1, 100, 15000);
+
+							~ce_knobs[0].value = value;
+							~value_temp = ~ce_knobs[0].value.linlin(0, 1, 200, 9000);
+
 							~charArray = [ ];
 						},
 						~potentiometer1, {
@@ -481,11 +487,6 @@ SerialPort.devices;
 
 	}
 ).play;
-)
-
-(
-~val1 = 0.99;
-~val1.linexp(0, 1, 0.1, 880);
 )
 
 ~getValues.stop;
