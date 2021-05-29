@@ -6,7 +6,7 @@
 
 
 (
-// ---hi hat --- //
+// --- hi-hat --- //
 
 SynthDef("hh", {
     arg noiseRel = 0.25, noiseLevel=0.2, ffreq=9853, q=0.6, amp=0.3;
@@ -156,7 +156,7 @@ x = case
 	postln(x);
 };
 
-///////////////////////////////////// hit-hat /////////////////////////////////////
+///////////////////////////////////// hi-hat /////////////////////////////////////
 
 hh = Button.new(drum_kit_win,Rect(30,10,80,80)).states_([["Hi-Hat", Color.black, Color.fromHexString("A1E7F0")]]);
 
