@@ -1,8 +1,8 @@
 # CMLS-Homework-3-Group-8
 
-Create a set of drum sounds (minimum 3) and an interface to control them.
-For the synthesis part (e.g., subtractive synthesis), use SuperCollider. Feel free to check the examples on sccode.org and other resources online. You can implement even non-traditional drum sounds if you want (e.g., not just percussive ones).
+Our task for this homework was to create a Drum Set using SuperCollider and an interface to control the parameters of such a Drum Set.
 
-As far as the interaction part is concerned (e.g., synthesis parameters setting, play the drum, etc.), you can exploit either MIDI or OSC communication protocols. For example, you can use touchOSC app. Alternatively, you can combine Processing, JUCE to turn other devices (e.g., Arduino, Kinect, etc.) into input peripherals.
+A total of 5 different drum sounds are synthesised, along with a User Interface to control them using different input devices.
+In this report, we are going to explain the generation of the drum sounds, the interactive system design and the protocol communication between different interfaces.
 
-Be creative, feel free to combine different components for visualization, user interaction and control.
+We implemented our project using SuperCollider, an environment and programming language for real-time audio synthesis and algorithmic composition, and Arduino, a microcontroller designed to interact with the incoming real-world data through an electronic prototyping platform.
