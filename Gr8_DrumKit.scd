@@ -188,7 +188,7 @@ knob_names[0,1] = StaticText(drum_kit_win,Rect(40+15,175+120,90,30)).string_("AM
 
 ///////////////////////////////////// snare /////////////////////////////////////
 
-sn = Button.new(drum_kit_win,Rect(140,10,80,80)).states_([["Snare",Color.black, Color.fromHexString("64C5D7")]]);
+sn = Button.new(drum_kit_win,Rect(140,10,80,80)).states_([["Snare", Color.black, Color.fromHexString("64C5D7")]]);
 
 sn.mouseDownAction = {
 	var snare;
@@ -213,7 +213,7 @@ knob_names[1,1] = StaticText(drum_kit_win,Rect(40+125,175+120,90,30)).string_("A
 
 ///////////////////////////////////// kick /////////////////////////////////////
 
-kc = Button.new(drum_kit_win,Rect(250,10,80,80)).states_([["Kick",Color.black, Color.fromHexString("3399BD")]]);
+kc = Button.new(drum_kit_win,Rect(250,10,80,80)).states_([["Kick", Color.black, Color.fromHexString("3399BD")]]);
 
 kc.mouseDownAction = {
 	var kick;
@@ -238,7 +238,7 @@ knob_names[2,1] = StaticText(drum_kit_win,Rect(40+235,175+120,90,30)).string_("A
 
 ///////////////////////////////////// clap /////////////////////////////////////
 
-ce = Button.new(drum_kit_win,Rect(360,10,80,80)).states_([["Clap",Color.black, Color.fromHexString("206A9D")]]);
+ce = Button.new(drum_kit_win,Rect(360,10,80,80)).states_([["Clap", Color.black, Color.fromHexString("206A9D")]]);
 
 ce.mouseDownAction = {
 	var clap;
@@ -263,7 +263,7 @@ knob_names[3,1] = StaticText(drum_kit_win,Rect(40+345,175+120,90,30)).string_("A
 
 ///////////////////////////////////// tom /////////////////////////////////////
 
-tom = Button.new(drum_kit_win,Rect(470,10,80,80)).states_([["Tom",Color.black, Color.fromHexString("004C8D")]]);
+tom = Button.new(drum_kit_win,Rect(470,10,80,80)).states_([["Tom", Color.black, Color.fromHexString("004C8D")]]);
 
 tom.mouseDownAction = {
 	var tom;
@@ -289,7 +289,7 @@ knob_names[4,1] = StaticText(drum_kit_win,Rect(40+455,175+120,90,30)).string_("A
 
 
 ////////// UMUT ///////////
-
+////////// ??????
 
 (
 var window, size = 80; // try different sizes - from 15 to 200 or more!
@@ -307,21 +307,19 @@ StaticText(window,Rect(40, size-15, size, size)).string_("param1");
 StaticText(window,Rect(50+size, size-15, size, size)).string_("param2");
 StaticText(window,Rect(60+(size*2), size-15, size, size)).string_("param3");
 
-b1 = Button(window, Rect(20, size*2-30, size, size))
-.states_([
+b1 = Button(window, Rect(20, size*2-30, size, size)).states_([
             ["Kick", Color.black, Color.fromHexString("A1E7F0")],
         ])
         .action_({ arg butt;
             butt.value.postln;
         });
-b2 = Button(window, Rect(30+size, size*2-30, size, size))
- .states_([
+b2 = Button(window, Rect(30+size, size*2-30, size, size)).states_([
             ["Snare", Color.black, Color.fromHexString("3399BD")],
         ])
         .action_({ arg butt;
             butt.value.postln;
         });
-b3 = Button(window, Rect(40+(size*2), size*2-30, size, size)) .states_([
+b3 = Button(window, Rect(40+(size*2), size*2-30, size, size)).states_([
             ["Whatever", Color.black, Color.fromHexString("004C8D")],
         ])
         .action_({ arg butt;
