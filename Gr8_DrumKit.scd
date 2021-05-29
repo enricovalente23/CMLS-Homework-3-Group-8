@@ -373,10 +373,10 @@ SerialPort.devices;
 
    while ({ascii.isDecDigit},
     {
-     ~charArray.add(ascii);
+     ~charArray = ~charArray.add(ascii);
      ascii = ~port.read.asAscii;
      postln(ascii);
-     postln(~charArray);
+     postln(~charArray)
     }
    );
    //Check if there are read values
@@ -464,4 +464,17 @@ SerialPort.devices;
 
 ~getValues.stop;
 
- 
+(
+var ascii = 0;
+~charArray = [];
+
+while ({ascii < 5},
+    {
+		~charArray = ~charArray.add(ascii);
+		ascii = ascii + 1;
+		postln(ascii);
+		postln(~charArray)
+    }
+   );
+
+)
