@@ -325,170 +325,142 @@ knob_names[4,1] = StaticText(drum_kit_win,Rect(40+455,200+120,90,30)).string_("A
 ///////////////////////////////////////////////////////////////---SERIAL PORT SETTING---/////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+(
 SerialPort.devices;
-//MISSING PORT
 ~port = SerialPort.new("COM3", 9600);
+)
 
 (
 ~getValues = Routine.new(
-	{
-		var ascii;
-		var state;
-		//ascii = ~commands.choose;
-		//ascii.postln;
-		{
-			ascii = ~port.read.asAscii;
-			postln(ascii);
+ {
+  var ascii;
+  var state;
+  //ascii = ~commands.choose;
+  //ascii.postln;
+  {
+   ascii = ~port.read.asAscii;
+   postln(ascii);
+   //Mock values
+   //ascii = ~playCommand;
+   //Check if command start
+   switch (ascii,
+    ~playCommand,   {
+     state = ~playCommand;
+     ~charArray = [ ];
+     ascii = ~port.read.asAscii;
+    },
+    ~sonar, {
+     state = ~sonar;
+     ~charArray = [ ];
+     ascii = ~port.read.asAscii;
+    },
+    ~fotoResistor, {
+     state = ~fotoResistor;
+     ~charArray = [ ];
+     ascii = ~port.read.asAscii;
+    },
+    ~potentiometer1, {
+     state = ~potentiometer1;
+     ~charArray = [ ];
+     ascii = ~port.read.asAscii;
+    },
+    ~potentiometer2, {
+     state = ~potentiometer2;
+     ~charArray = [ ];
+     ascii = ~port.read.asAscii;
+    }
+   );
 
-			//Mock values
-			//ascii = ~playCommand;
-
-			//Check if command start
-			switch (ascii,
-
-				~playCommand,   {
-					state = ~playCommand;
-					~charArray = [ ];
-					ascii = ~port.read.asAscii;
-				},
-
-				~sonar, {
-					state = ~sonar;
-					~charArray = [ ];
-					ascii = ~port.read.asAscii;
-				},
-
-				~fotoResistor, {
-					state = ~fotoResistor;
-					~charArray = [ ];
-					ascii = ~port.read.asAscii;
-				},
-
-				~potentiometer1, {
-					state = ~potentiometer1;
-					~charArray = [ ];
-					ascii = ~port.read.asAscii;
-				},
-				~potentiometer2, {
-					state = ~potentiometer2;
-					~charArray = [ ];
-					ascii = ~port.read.asAscii;
-				}
-			);
-
-
-			//Check if command end
-			while ({ascii.isDecDigit},
-				{
-					~charArray.add(ascii);
-					ascii = ~port.read.asAscii;
-				}
-			);
-			postln(~charArray);
-
-			//Check if there are read values
-			if (true/*~charArray.size > 0      ascii !== ~commandTerminator)*/,
-				{
-					~val1 = ~charArray.collect(_.digit).convertDigits;
-					postln("ok");
-					//~val1 = ~drums.choose;
-					switch(state,
-						~playCommand, {
-							switch (~val1,
-
-								~kickIndex, {
-									var kick;
-									kick = Synth(\kc, [\start, ~start_temp, \amp, ~amp_kc_temp]);
-									//kick.play;
-								},
-
-								~snareIndex, {
-									var snare;
-									snare = Synth(\sn, [\sinfreq, ~sinfreq_temp, \ffreq, ~ffreq_sn_temp, \amp, ~amp_sn_temp ]);
-									//snare.play;
-								},
-
-								~hihatIndex, {
-									var hit_hat;
-									hit_hat = Synth(\hh, [\ffreq, ~ffreq_hh_temp, \amp, ~amp_hh_temp])
-									//hit_hat.play;
-								},
-
-								~clapIndex, {
-									var clap;
-									clap = Synth(\ce, [\value, ~value_temp, \amp, ~amp_clap_temp]);
-									//clap_e.play;
-								},
-
-								~tomIndex, {
-									var tom;
-									tom = Synth(\tom, [\startPitch, ~startPitch_temp, \amp, ~amp_tom_temp]);
-									//tom.play;
-								}
-							);
-							~charArray = [ ];
-						},
-						~fotoResistor, {
-							var value;
-							~val1 = ~charArray.collect(_.digit).convertDigits;
-							value = ~val1.linexp(~fotoresistorMin, ~fotoresistorMax, 0.01, 1);
-
-							~hh_knobs[0].value = value;
-							~ffreq_hh_temp = ~hh_knobs[0].value.linlin(0, 1, 100, 15000);
-
-							~ce_knobs[0].value = value;
-							~value_temp = ~ce_knobs[0].value.linlin(0, 1, 200, 9000);
-
-							~charArray = [ ];
-						},
-						~potentiometer1, {
-							var value;
-							~val1 = ~charArray.collect(_.digit).convertDigits;
-							value = ~val1.linexp(~potentiometerMin, ~potentiometerMax, 0.01, 1);
-
-							~hh_knobs[1].value = value;
-							~amp_hh_temp = ~hh_knobs[1].value.linexp(0, 1, 0.01, 3);
-
-							~sn_knobs[1].value = value;
-							~amp_sn_temp = ~sn_knobs[1].value.linexp(0, 1, 0.01, 2);
-
-							~kc_knobs[1].value = value;
-							~amp_kc_temp = ~kc_knobs[1].value.linexp(0, 1, 0.01, 2);
-
-							~ce_knobs[1].value = value;
-							~amp_clap_temp = ~ce_knobs[1].value.linexp(0, 1, 0.01, 3.5);
-
-							~tom_knobs[1].value = value;
-							~tom_knobs[1].action = ~amp_tom_temp = ~tom_knobs[1].value.linexp(0, 1, 0.01, 3);
-
-							~charArray = [ ];
-						},
-						~potentiometer2, {
-							var value;
-							~val1 = ~charArray.collect(_.digit).convertDigits;
-							value = ~val1.linexp(~kPotentiometerMin, ~kPotentiometerMax, 0.01, 1);
-
-							~sn_knobs[0].value = value;
-							~sinfreq_temp = ~sn_knobs[0].value.linexp(0, 1, 80, 1000);
-
-							~kc_knobs[0].value = value;
-							~start_temp = ~kc_knobs[0].value.linlin(0, 1, 40, 2000);
-
-							~tom_knobs[0].value = value;
-							~startPitch_temp = ~tom_knobs[0].value.linexp(0, 1, 100, 2000);
-
-							~charArray = [ ];
-						}
-					)
-
-				},{}
-			);
-		}.loop;
-
-	}
+   while ({ascii.isDecDigit},
+    {
+     ~charArray.add(ascii);
+     ascii = ~port.read.asAscii;
+     postln(ascii);
+     postln(~charArray);
+    }
+   );
+   //Check if there are read values
+   if ((/*charArray.size > 0*/      ascii !== ~commandTerminator),
+    {
+     ~val1 = ~charArray.collect(_.digit).convertDigits;
+     postln("ok");
+     //~val1 = ~drums.choose;
+     switch(state,
+      ~playCommand, {
+       switch (~val1,
+        ~kickIndex, {
+         var kick;
+         kick = Synth(\kc, [\start, ~start_temp, \amp, ~amp_kc_temp]);
+         //kick.play;
+        },
+        ~snareIndex, {
+         var snare;
+         snare = Synth(\sn, [\sinfreq, ~sinfreq_temp, \ffreq, ~ffreq_sn_temp, \amp, ~amp_sn_temp ]);
+         //snare.play;
+        },
+        ~hihatIndex, {
+         var hit_hat;
+         hit_hat = Synth(\hh, [\ffreq, ~ffreq_hh_temp, \amp, ~amp_hh_temp])
+         //hit_hat.play;
+        },
+        ~clapIndex, {
+         var clap;
+         clap = Synth(\ce, [\value, ~value_temp, \amp, ~amp_clap_temp]);
+         //clap_e.play;
+        },
+        ~tomIndex, {
+         var tom;
+         tom = Synth(\tom, [\startPitch, ~startPitch_temp, \amp, ~amp_tom_temp]);
+         //tom.play;
+        }
+       );
+       ~charArray = [ ];
+      },
+      ~fotoResistor, {
+       var value;
+       ~val1 = ~charArray.collect(_.digit).convertDigits;
+       value = ~val1.linexp(~fotoresistorMin, ~fotoresistorMax, 0.01, 1);
+       ~hh_knobs[0].value = value;
+       ~ffreq_hh_temp = ~hh_knobs[0].value.linlin(0, 1, 100, 15000);
+       ~ce_knobs[0].value = value;
+       ~value_temp = ~ce_knobs[0].value.linlin(0, 1, 200, 9000);
+       ~charArray = [ ];
+      },
+      ~potentiometer1, {
+       var value;
+       ~val1 = ~charArray.collect(_.digit).convertDigits;
+       value = ~val1.linexp(~potentiometerMin, ~potentiometerMax, 0.01, 1);
+       ~hh_knobs[1].value = value;
+       ~amp_hh_temp = ~hh_knobs[1].value.linexp(0, 1, 0.01, 3);
+       ~sn_knobs[1].value = value;
+       ~amp_sn_temp = ~sn_knobs[1].value.linexp(0, 1, 0.01, 2);
+       ~kc_knobs[1].value = value;
+       ~amp_kc_temp = ~kc_knobs[1].value.linexp(0, 1, 0.01, 2);
+       ~ce_knobs[1].value = value;
+       ~amp_clap_temp = ~ce_knobs[1].value.linexp(0, 1, 0.01, 3.5);
+       ~tom_knobs[1].value = value;
+       ~tom_knobs[1].action = ~amp_tom_temp = ~tom_knobs[1].value.linexp(0, 1, 0.01, 3);
+       ~charArray = [ ];
+      },
+      ~potentiometer2, {
+       var value;
+       ~val1 = ~charArray.collect(_.digit).convertDigits;
+       value = ~val1.linexp(~kPotentiometerMin, ~kPotentiometerMax, 0.01, 1);
+       ~sn_knobs[0].value = value;
+       ~sinfreq_temp = ~sn_knobs[0].value.linexp(0, 1, 80, 1000);
+       ~kc_knobs[0].value = value;
+       ~start_temp = ~kc_knobs[0].value.linlin(0, 1, 40, 2000);
+       ~tom_knobs[0].value = value;
+       ~startPitch_temp = ~tom_knobs[0].value.linexp(0, 1, 100, 2000);
+       ~charArray = [ ];
+      }
+     )
+    },{}
+   );
+  }.loop;
+ }
 ).play;
 )
-
 ~getValues.stop;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
