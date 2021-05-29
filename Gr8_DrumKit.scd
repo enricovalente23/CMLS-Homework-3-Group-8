@@ -166,7 +166,7 @@ var hh_knobs, sn_knobs, kc_knobs, ce_knobs, tom_knobs;
 ~amp_kc_temp = 0.5;
 
 ~value_temp = 7600;
-~amp_clap_temp = 0.125;
+~amp_clap_temp = 0.25;
 
 ~startPitch_temp = 125;
 //~pitchRel_temp = 0.360;     //removed
@@ -420,6 +420,7 @@ SerialPort.devices;
 		//ascii.postln;
 		{
 			ascii = ~port.read.asAscii;
+			postln(ascii);
 
 			//Mock values
 			//ascii = ~playCommand;
@@ -430,38 +431,43 @@ SerialPort.devices;
 				~playCommand,   {
 					state = ~playCommand;
 					~charArray = [ ];
+					ascii = ~port.read.asAscii;
 				},
 
 				~sonar, {
 					state = ~sonar;
 					~charArray = [ ];
+					ascii = ~port.read.asAscii;
 				},
 
 				~fotoResistor, {
 					state = ~fotoResistor;
 					~charArray = [ ];
+					ascii = ~port.read.asAscii;
 				},
 
 				~potentiometer, {
 					state = ~potentiometer;
 					~charArray = [ ];
+					ascii = ~port.read.asAscii;
 				}
 			);
 
-			ascii = ~port.read.asAscii;
 
 			//Check if command end
-			while (ascii != ~commandTerminator,
+			while ({ascii.isDecDigit},
 				{
 					~charArray.add(ascii);
 					ascii = ~port.read.asAscii;
 				}
 			);
+			postln(~charArray);
 
 			//Check if there are read values
-			if ( ~charArray.size > 0,
+			if (true/*~charArray.size > 0      ascii !== ~commandTerminator)*/,
 				{
 					~val1 = ~charArray.collect(_.digit).convertDigits;
+					postln("ok");
 					//~val1 = ~drums.choose;
 					switch(state,
 						~playCommand, {
@@ -469,43 +475,48 @@ SerialPort.devices;
 
 								~kickIndex, {var kick;
 									kick = Synth(\kc, [\start, ~start_temp, \amp, ~amp_kc_temp]);
-									kick.play;
+									//kick.play;
 								},
 
 								~snareIndex, {var snare;
 									snare = Synth(\sn, [\sinfreq, ~sinfreq_temp, \ffreq, ~ffreq_sn_temp, \amp, ~amp_sn_temp ]);
-									snare.play;
+									//snare.play;
 								},
 
-								~hihatIndex, {
-									var hit_hat;
-									hit_hat = Synth(\hh, [\q, ~q_temp, \ffreq, ~ffreq_hh_temp, \amp, ~amp_hh_temp]);
-									hit_hat.play;
+								~hihatIndex, {var hit_hat;
+									hit_hat = Synth(\hh, [\ffreq, ~ffreq_hh_temp, \amp, ~amp_hh_temp])
+									//hit_hat.play;
 								},
 
-								~clapIndex, {var clap_e;
-									clap_e = Synth(\ce, [\value, ~value_temp, \amp, ~amp_clap_e_temp]);
-									clap_e.play;
+								~clapIndex, {var clap;
+									//clap_e = Synth(\ce, [\value, ~value_temp, \amp, ~amp_clap_e_temp]);
+									clap = Synth(\ce, [\value, ~value_temp, \amp, ~amp_clap_temp]);
+									//clap_e.play;
 								},
 
 								~tomIndex, {var tom;
-									tom = Synth(\tom, [\pitchRel, ~pitchRel_temp, \startPitch, ~startPitch_temp, \amp, ~amp_tom_temp]);
-									tom.play;
+									tom = Synth(\tom, [\startPitch, ~startPitch_temp, \amp, ~amp_tom_temp]);
+									//tom.play;
 								}
 							);
+							~charArray = [ ];
 						},
-						~sonar, {},
-						~fotoResistor, {},
-						~potentiometer, {}
+						~sonar, {~charArray = [ ];},
+						~fotoResistor, {~charArray = [ ];},
+						~potentiometer, {~charArray = [ ];}
 					)
 
-				}
+				},{}
 			);
 		}.loop;
 
 	}
 ).play;
 )
+
+
+
+~getValues.stop;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////---IGNORE---////////////////////////////////////////////////////////////////////////
