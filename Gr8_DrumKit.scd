@@ -145,6 +145,13 @@ MIDIIn.connectAll;
 (
 var hh, sn, kc, ce, tom, knob_names, buttons4keys, drum_kit_win;
 var hh_knobs, sn_knobs, kc_knobs, ce_knobs, tom_knobs;
+
+~kickIndex = 1;
+~snareIndex = 2;
+~hihatIndex = 3;
+~clapIndex = 4;
+~tomIndex = 5;
+
 ~q_temp = 0.59219532012939;
 ~ffreq_hh_temp = 9853;
 ~amp_hh_temp = 0.125;
@@ -409,7 +416,7 @@ knob_names[4,2] =  StaticText(drum_kit_win,Rect(40+700,170+200,90,30)).string_("
 
 SerialPort.devices;
 //MISSING PORT
-~port = SerialPort.new("COM3", 9600);
+//~port = SerialPort.new("COM3", 9600);
 
 
 
@@ -419,45 +426,88 @@ SerialPort.devices;
 ~fotoResistor = $f;
 ~potentiometer = $p;
 ~charArray = [ ];
+
+~kickIndex = 1;
+~snareIndex = 2;
+~hihatIndex = 3;
+~clapIndex = 4;
+~tomIndex = 5;
+
+~commands = [~playCommand, ~sonar, ~fotoResistor, ~potentiometer];
+~drums = [~kickIndex, ~snareIndex, ~hihatIndex, ~clapIndex, ~tomIndex];
+)
+
+(
 ~getValues = Routine.new(
 	{
 		var ascii;
-		{
-			ascii = ~port.read.asAscii;
+		var x;
+		ascii = ~commands.choose;
+		ascii.postln;
+		//{
+			//ascii = ~port.read.asAscii;
+		ascii = ~playCommand;
 			switch (ascii,
+
 				~playCommand,   {
 					~charArray = [ ];
-					ascii = ~port.read.asAscii;
+					//ascii = ~port.read.asAscii;
 					~charArray.add(ascii);
-					~val1 = ~charArray.collect(_.digit).convertDigits;
+					//~val1 = ~charArray.collect(_.digit).convertDigits;
+					~val1 = ~drums.choose;
+					~val1.postln;
+					switch (~val1,
+
+						~kickIndex, {var kick;
+							kick = Synth(\kc, [\start, ~start_temp, \amp, ~amp_kc_temp]);
+							kick.play;
+						},
+
+						~snareIndex, {var snare;
+							snare = Synth(\sn, [\sinfreq, ~sinfreq_temp, \ffreq, ~ffreq_sn_temp, \amp, ~amp_sn_temp ]);
+							snare.play;
+						},
+
+						~hihatIndex, {
+							var hit_hat;
+							hit_hat = Synth(\hh, [\q, ~q_temp, \ffreq, ~ffreq_hh_temp, \amp, ~amp_hh_temp]);
+							hit_hat.play;
+						},
+
+						~clapIndex, {var clap_e;
+							clap_e = Synth(\ce, [\value, ~value_temp, \amp, ~amp_clap_e_temp]);
+							clap_e.play;
+						},
+
+						~tomIndex, {var tom;
+							tom = Synth(\tom, [\pitchRel, ~pitchRel_temp, \startPitch, ~startPitch_temp, \amp, ~amp_tom_temp]);
+							tom.play;
+						}
+					);
+
 					//////////////////////////////////////////////////FIND A WAY TO PLAY THE RIGHT PERCUSSION
 				},
-				~sonar, { \wrong },
-				~fotoResistor, { \wrong },
-				~potentiometer, { \wrong }
+
+				~sonar, { ~sonar.postln; },
+
+				~fotoResistor, { ~fotoResistor.postln; },
+
+				~potentiometer, { ~potentiometer.postln; }
 			);
-			if(ascii.isDecDigit,{~charArray = ~charArray.add(ascii)});
-			if(ascii == $d,{
-				~val1 = ~charArray.collect(_.digit).convertDigits;
-				~charArray = [ ];
-				}
-			);
-		}.loop;
+		//}.loop;
 
 	}
 ).play;
 )
 
-~bpm = 100;
-
-switch (ascii,
-	$a, {},
-
-);
-
 (
-
+var ascii;
+var x;
+ascii = ~commands.choose;
+ascii.postln;
 )
+
+~bpm = 100;
 
 (
 Pdef(\kickpat,
