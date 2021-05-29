@@ -25,8 +25,6 @@ s.options.numInputBusChannels.postln;
 ~openHiHat.play;
 ~clap.play;
 
-
-
 ~bus = Bus.audio(s, ~numChannels);
 
 ~loadSample = {
@@ -42,8 +40,9 @@ s.options.numInputBusChannels.postln;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// ---hi hat --- //
 (
+// ---hi hat --- //
+
 SynthDef("hh", {
     arg noiseRel = 0.25380977392197, noiseLevel=0.18370378851891, ffreq=9853, q=0.59219532012939, amp=0.3;
     var noiseOsc = BBandPass.ar(PinkNoise.ar(), ffreq, q);
@@ -135,9 +134,11 @@ SynthDef("tom", {
 }).add;
 )
 
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////// Supercollider <--> GUI ///////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 MIDIClient.init;
 
@@ -153,12 +154,12 @@ var hh_knobs, sn_knobs, kc_knobs, ce_knobs, tom_knobs;
 ~clapIndex = 4;
 ~tomIndex = 5;
 
-~q_temp = 0.6;
+//~q_temp = 0.6;            //removed
 ~ffreq_hh_temp = 9850;
 ~amp_hh_temp = 0.125;
 
 ~sinfreq_temp = 180;
-~ffreq_sn_temp = 2000;
+//~ffreq_sn_temp = 2000;      //removed
 ~amp_sn_temp = 0.25;
 
 ~start_temp = 475;
@@ -167,8 +168,8 @@ var hh_knobs, sn_knobs, kc_knobs, ce_knobs, tom_knobs;
 ~value_temp = 7600;
 ~amp_clap_temp = 0.125;
 
-~pitchRel_temp = 0.360;
 ~startPitch_temp = 125;
+//~pitchRel_temp = 0.360;     //removed
 ~amp_tom_temp = 0.25;
 
 ~keys2synth;
@@ -177,7 +178,7 @@ knob_names = Array2D.new(5, 3);
 buttons4keys = Array.newClear(5);
 ~keys2synth = Array.newClear(5);
 
-drum_kit_win = Window.new(name: "Drum Set", bounds: Rect(100,200,580,450)).background_(Color.grey(0.55)).front;
+drum_kit_win = Window.new(name: "Drum Set", bounds: Rect(100,200,580,430)).background_(Color.grey(0.7)).front;
 
 drum_kit_win.view.keyDownAction = {
 	arg view, char, modifiers, unicode, keycode;
@@ -185,15 +186,15 @@ drum_kit_win.view.keyDownAction = {
 
 x = case
 
-	{ keycode == ~keys2synth[0]  } { chosen_synth = Synth(\hh, [\q, ~q_temp, \ffreq, ~ffreq_hh_temp, \amp, ~amp_hh_temp]);}
+	{ keycode == ~keys2synth[0]  } { chosen_synth = Synth(\hh, [\ffreq, ~ffreq_hh_temp, \amp, ~amp_hh_temp]);}
 
-	{ keycode == ~keys2synth[1]  } { chosen_synth = Synth(\sn, [\sinfreq, ~sinfreq_temp, \ffreq, ~ffreq_sn_temp, \amp, ~amp_sn_temp]);}
+	{ keycode == ~keys2synth[1]  } { chosen_synth = Synth(\sn, [\sinfreq, ~sinfreq_temp, \amp, ~amp_sn_temp]);}
 
 	{ keycode == ~keys2synth[2]  } { chosen_synth = Synth(\kc, [\start, ~start_temp, \amp, ~amp_kc_temp]);}
 
 	{ keycode == ~keys2synth[3]  } { chosen_synth = Synth(\ce, [\value, ~value_temp, \amp, ~amp_clap_temp]);}
 
-	{ keycode == ~keys2synth[4] } { chosen_synth = Synth(\tom, [\pitchRel, ~pitchRel_temp, \startPitch, ~startPitch_temp, \amp, ~amp_tom_temp]); };
+	{ keycode == ~keys2synth[4] } { chosen_synth = Synth(\tom, [\startPitch, ~startPitch_temp, \amp, ~amp_tom_temp]); };
 
 	postln(x);
 };
@@ -201,7 +202,7 @@ x = case
 ///////////////////////////////////// hit-hat /////////////////////////////////////
 
 hh = Button.new(drum_kit_win,Rect(30,10,80,80)).states_([["Hi-Hat", Color.black, Color.fromHexString("A1E7F0")]]);
-buttons4keys[0] = Button.new(drum_kit_win,Rect(30,400,80,40)).states_([["Assign",Color.black, Color.fromHexString("A1E7F0")]]);
+buttons4keys[0] = Button.new(drum_kit_win,Rect(30,380,80,40)).states_([["Assign",Color.black, Color.fromHexString("A1E7F0")]]);
 
 buttons4keys[0].mouseDownAction = {
 	v = Window.new(name: "Press a key to save it", bounds:Rect(500, 500,500,100)).front;
@@ -215,37 +216,30 @@ buttons4keys[0].mouseDownAction = {
 
 hh.mouseDownAction = {
 	var hit_hat;
-	hit_hat = Synth(\hh, [\q, ~q_temp, \ffreq, ~ffreq_hh_temp, \amp, ~amp_hh_temp]);
+	hit_hat = Synth(\hh, [\ffreq, ~ffreq_hh_temp, \amp, ~amp_hh_temp]);
 };
 
-hh_knobs = Array.newClear(3);
+hh_knobs = Array.newClear(2);
 
-hh_knobs[0] = Knob(drum_kit_win,Rect(30,100,80,80));
-hh_knobs[0].value = 0.59/5;
-hh_knobs[0].action = {~q_temp = hh_knobs[0].value.linlin(0, 1, 0, 5);
-						postln(~q_temp);
-					}; //changes the bandwidth of the noiseOsc
-knob_names[1,0] = StaticText(drum_kit_win,Rect(50+15,170,90,30)).string_("Q");
-
-hh_knobs[1] = Knob(drum_kit_win,Rect(30,200,80,80));
-hh_knobs[1].value = 9853/15000;
-hh_knobs[1].action = {~ffreq_hh_temp = hh_knobs[1].value.linlin(0, 1, 100, 15000);
+hh_knobs[0] = Knob(drum_kit_win,Rect(30,130,80,80));
+hh_knobs[0].value = 9850/15000;
+hh_knobs[0].action = {~ffreq_hh_temp = hh_knobs[0].value.linlin(0, 1, 100, 15000);
 						postln(~ffreq_hh_temp);
 					};
-knob_names[0,1] = StaticText(drum_kit_win,Rect(35+15,170+100,90,30)).string_("F_FREQ");
+knob_names[0,0] = StaticText(drum_kit_win,Rect(35+15,200,90,30)).string_("F_FREQ");
 
-hh_knobs[2] = Knob(drum_kit_win,Rect(30,300,80,80));
-hh_knobs[2].value = 0.3/3;
-hh_knobs[2].action = {~amp_hh_temp = hh_knobs[2].value.linexp(0, 1, 0.01, 3);
+hh_knobs[1] = Knob(drum_kit_win,Rect(30,250,80,80));
+hh_knobs[1].value = 0.3/3;
+hh_knobs[1].action = {~amp_hh_temp = hh_knobs[1].value.linexp(0, 1, 0.01, 3);
 						postln(~amp_hh_temp);
 					};
-knob_names[0,2] = StaticText(drum_kit_win,Rect(40+15,170+200,90,30)).string_("AMP");
+knob_names[0,1] = StaticText(drum_kit_win,Rect(40+15,200+120,90,30)).string_("AMP");
 
 
 ///////////////////////////////////// snare /////////////////////////////////////
 
 sn = Button.new(drum_kit_win,Rect(140,10,80,80)).states_([["Snare",Color.black, Color.fromHexString("64C5D7")]]);
-buttons4keys[1] = Button.new(drum_kit_win,Rect(140,400,80,40)).states_([["Assign",Color.black, Color.fromHexString("64C5D7")]]);
+buttons4keys[1] = Button.new(drum_kit_win,Rect(140,380,80,40)).states_([["Assign",Color.black, Color.fromHexString("64C5D7")]]);
 
 buttons4keys[1].mouseDownAction = {
 	v = Window.new(name: "Press a key to save it", bounds:Rect(500, 500,500,100)).front;
@@ -259,36 +253,29 @@ buttons4keys[1].mouseDownAction = {
 
 sn.mouseDownAction = {
 	var snare;
-	snare = Synth(\sn, [\sinfreq, ~sinfreq_temp, \ffreq, ~ffreq_sn_temp, \amp, ~amp_sn_temp ]);
+	snare = Synth(\sn, [\sinfreq, ~sinfreq_temp, \amp, ~amp_sn_temp ]);
 };
-sn_knobs = Array.newClear(3);
+sn_knobs = Array.newClear(2);
 
-sn_knobs[0] = Knob(drum_kit_win,Rect(140,100,80,80));
+sn_knobs[0] = Knob(drum_kit_win,Rect(140,130,80,80));
 sn_knobs[0].value = 180/1000;
 sn_knobs[0].action = {~sinfreq_temp = sn_knobs[0].value.linlin(0, 1, 0, 1000);
 						postln(~sinfreq_temp);
 					};
-knob_names[1,0] = StaticText(drum_kit_win,Rect(25+125,170,90,30)).string_("SIN_FREQ");
+knob_names[1,0] = StaticText(drum_kit_win,Rect(25+125,200,90,30)).string_("SIN_FREQ");
 
-sn_knobs[1] = Knob(drum_kit_win,Rect(140,200,80,80));
-sn_knobs[1].value = 2000/5000;
-sn_knobs[1].action = {~ffreq_sn_temp = sn_knobs[1].value.linlin(0, 1, 100, 5000);
-						postln(~ffreq_sn_temp);
-					};
-knob_names[1,1] = StaticText(drum_kit_win,Rect(33+125,170+100,90,30)).string_("F_FREQ");
-
-sn_knobs[2] = Knob(drum_kit_win,Rect(140,300,80,80));
-sn_knobs[2].value = 0.1/2;
-sn_knobs[2].action = {~amp_sn_temp = sn_knobs[2].value.linexp(0, 1, 0.01, 2);
+sn_knobs[1] = Knob(drum_kit_win,Rect(140,250,80,80));
+sn_knobs[1].value = 0.1/2;
+sn_knobs[1].action = {~amp_sn_temp = sn_knobs[1].value.linexp(0, 1, 0.01, 2);
 						postln(~amp_sn_temp);
 					};
-knob_names[1,2] = StaticText(drum_kit_win,Rect(40+125,170+200,90,30)).string_("AMP");
+knob_names[1,1] = StaticText(drum_kit_win,Rect(40+125,200+120,90,30)).string_("AMP");
 
 
 ///////////////////////////////////// kick /////////////////////////////////////
 
 kc = Button.new(drum_kit_win,Rect(250,10,80,80)).states_([["Kick",Color.black, Color.fromHexString("3399BD")]]);
-buttons4keys[2] = Button.new(drum_kit_win,Rect(250,400,80,40)).states_([["Assign",Color.black, Color.fromHexString("3399BD")]]);
+buttons4keys[2] = Button.new(drum_kit_win,Rect(250,380,80,40)).states_([["Assign",Color.black, Color.fromHexString("3399BD")]]);
 
 buttons4keys[2].mouseDownAction = {
 	v = Window.new(name: "Press a key to save it", bounds:Rect(500, 500,500,100)).front;
@@ -306,25 +293,25 @@ kc.mouseDownAction = {
 };
 kc_knobs = Array.newClear(2);
 
-kc_knobs[0] = Knob(drum_kit_win,Rect(250,100,80,80));
+kc_knobs[0] = Knob(drum_kit_win,Rect(250,130,80,80));
 kc_knobs[0].value = 472/2000;
 kc_knobs[0].action = {~start_temp = kc_knobs[0].value.linlin(0, 1, 40, 2000);
 						postln(~start_temp);
 					};
-knob_names[2,0] = StaticText(drum_kit_win,Rect(18+235,170,90,30)).string_("START_FREQ");
+knob_names[2,0] = StaticText(drum_kit_win,Rect(18+235,200,90,30)).string_("START_FREQ");
 
-kc_knobs[1] = Knob(drum_kit_win,Rect(250,300,80,80));
+kc_knobs[1] = Knob(drum_kit_win,Rect(250,250,80,80));
 kc_knobs[1].value = 0.1/2;
 kc_knobs[1].action = {~amp_kc_temp = kc_knobs[1].value.linexp(0, 1, 0.01, 2);
 						postln(~amp_kc_temp);
 					};
-knob_names[2,1] = StaticText(drum_kit_win,Rect(40+235,170+200,90,30)).string_("AMP");
+knob_names[2,1] = StaticText(drum_kit_win,Rect(40+235,200+120,90,30)).string_("AMP");
 
 
 ///////////////////////////////////// clap /////////////////////////////////////
 
 ce = Button.new(drum_kit_win,Rect(360,10,80,80)).states_([["Clap",Color.black, Color.fromHexString("206A9D")]]);
-buttons4keys[3] = Button.new(drum_kit_win,Rect(360,400,80,40)).states_([["Assign",Color.black, Color.fromHexString("206A9D")]]);
+buttons4keys[3] = Button.new(drum_kit_win,Rect(360,380,80,40)).states_([["Assign",Color.black, Color.fromHexString("206A9D")]]);
 
 buttons4keys[3].mouseDownAction = {
 	v = Window.new(name: "Press a key to save it", bounds:Rect(500, 500,500,100)).front;
@@ -342,25 +329,25 @@ ce.mouseDownAction = {
 };
 ce_knobs = Array.newClear(2);
 
-ce_knobs[0] = Knob(drum_kit_win,Rect(360,100,80,80));
+ce_knobs[0] = Knob(drum_kit_win,Rect(360,130,80,80));
 ce_knobs[0].value = 7600/9000;
 ce_knobs[0].action = {~value_temp = ce_knobs[0].value.linlin(0, 1, 200, 9000);
 						postln(~value_temp);
 					};
-knob_names[3,0] = StaticText(drum_kit_win,Rect(15+345,170,90,30)).string_("VALUE_FREQ");
+knob_names[3,0] = StaticText(drum_kit_win,Rect(15+345,200,90,30)).string_("VALUE_FREQ");
 
-ce_knobs[1] = Knob(drum_kit_win,Rect(360,300,80,80));
+ce_knobs[1] = Knob(drum_kit_win,Rect(360,250,80,80));
 ce_knobs[1].value = 0.5/3.5;
 ce_knobs[1].action = {~amp_clap_temp = ce_knobs[1].value.linexp(0, 1, 0.01, 3.5);
 						postln(~amp_clap_temp);
 					};
-knob_names[3,1] = StaticText(drum_kit_win,Rect(40+345,170+200,90,30)).string_("AMP");
+knob_names[3,1] = StaticText(drum_kit_win,Rect(40+345,200+120,90,30)).string_("AMP");
 
 
 ///////////////////////////////////// tom /////////////////////////////////////
 
 tom = Button.new(drum_kit_win,Rect(470,10,80,80)).states_([["Tom",Color.black, Color.fromHexString("004C8D")]]);
-buttons4keys[4] = Button.new(drum_kit_win,Rect(470,400,80,40)).states_([["Assign",Color.black, Color.fromHexString("004C8D")]]);
+buttons4keys[4] = Button.new(drum_kit_win,Rect(470,380,80,40)).states_([["Assign",Color.black, Color.fromHexString("004C8D")]]);
 
 buttons4keys[4].mouseDownAction = {
 	v = Window.new(name: "Press a key to save it", bounds:Rect(500, 500,500,100)).front;
@@ -374,33 +361,25 @@ buttons4keys[4].mouseDownAction = {
 
 tom.mouseDownAction = {
 	var tom;
-	tom = Synth(\tom, [\pitchRel, ~pitchRel_temp, \startPitch, ~startPitch_temp, \amp, ~amp_tom_temp]);
+	tom = Synth(\tom, [\startPitch, ~startPitch_temp, \amp, ~amp_tom_temp]);
 };
-tom_knobs = Array.newClear(3);
+tom_knobs = Array.newClear(2);
 
-tom_knobs[0] = Knob(drum_kit_win,Rect(470,100,80,80));
+tom_knobs[0] = Knob(drum_kit_win,Rect(470,130,80,80));
 tom_knobs[0].value = 1000/3000;
 tom_knobs[0].action = {~startPitch_temp = tom_knobs[0].value.linlin(0, 1, 100, 3000);
 						postln(~startPitch_temp);
 					};
-knob_names[4,0] = StaticText(drum_kit_win,Rect(18+455,170,90,30)).string_("START_PITCH");
+knob_names[4,0] = StaticText(drum_kit_win,Rect(18+455,200,90,30)).string_("START_PITCH");
 
-tom_knobs[1] = Knob(drum_kit_win,Rect(470,200,80,80));
-tom_knobs[1].value = 0.11/1;
-tom_knobs[1].action = {~pitchRel_temp = tom_knobs[1].value.linlin(0, 1, 0, 1);
-						postln(~pitchRel_temp);
-					};
-knob_names[4,1] = StaticText(drum_kit_win,Rect(23+455,170+100,90,30)).string_("PITCH_REL");
-
-tom_knobs[2] = Knob(drum_kit_win,Rect(470,300,80,80));
-tom_knobs[2].value = 0.1/3;
-tom_knobs[2].action = {~amp_tom_temp = tom_knobs[2].value.linexp(0, 1, 0.01, 3);
+tom_knobs[1] = Knob(drum_kit_win,Rect(470,250,80,80));
+tom_knobs[1].value = 0.1/3;
+tom_knobs[1].action = {~amp_tom_temp = tom_knobs[1].value.linexp(0, 1, 0.01, 3);
 						postln(~amp_tom_temp);
 					};
-knob_names[4,2] = StaticText(drum_kit_win,Rect(40+455,170+200,90,30)).string_("AMP");
+knob_names[4,1] = StaticText(drum_kit_win,Rect(40+455,200+120,90,30)).string_("AMP");
 
 )
-
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////---ARDUINO CONSTANTS DEFINITIONS---///////////////////////////////////////////////////////
