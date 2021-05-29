@@ -392,9 +392,8 @@ SerialPort.devices;
 								},
 
 								~clapIndex, {var clap;
-									//clap_e = Synth(\ce, [\value, ~value_temp, \amp, ~amp_clap_e_temp]);
 									clap = Synth(\ce, [\value, ~value_temp, \amp, ~amp_clap_temp]);
-									//clap_e.play;
+									//clap.play;
 								},
 
 								~tomIndex, {var tom;
@@ -408,18 +407,15 @@ SerialPort.devices;
 						~fotoResistor, {~charArray = [ ];},
 						~potentiometer, {~charArray = [ ];}
 					)
-
 				},{}
 			);
 		}.loop;
-
 	}
 ).play;
 )
 
-
-
 ~getValues.stop;
+
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////---IGNORE---////////////////////////////////////////////////////////////////////////
