@@ -411,6 +411,7 @@ knob_names[4,2] = StaticText(drum_kit_win,Rect(40+455,170+200,90,30)).string_("A
 ~sonar = $s;
 ~fotoResistor = $f;
 ~potentiometer = $p;
+~commandTerminator = $t;
 ~charArray = [ ];
 
 ~kickIndex = 1;
@@ -429,65 +430,100 @@ knob_names[4,2] = StaticText(drum_kit_win,Rect(40+455,170+200,90,30)).string_("A
 
 SerialPort.devices;
 //MISSING PORT
-//~port = SerialPort.new("COM3", 9600);
+~port = SerialPort.new("COM3", 9600);
 
 (
 ~getValues = Routine.new(
 	{
 		var ascii;
 		var state;
-		ascii = ~commands.choose;
-		ascii.postln;
+		//ascii = ~commands.choose;
+		//ascii.postln;
 		{
-			//ascii = ~port.read.asAscii;
-			ascii = ~playCommand;
+			ascii = ~port.read.asAscii;
+
+			//Mock values
+			//ascii = ~playCommand;
+
+			//Check if command start
 			switch (ascii,
 
-				~playCommand,   { state = ~playCommand;
+				~playCommand,   {
+					state = ~playCommand;
 					~charArray = [ ];
-					//ascii = ~port.read.asAscii;
-					~charArray.add(ascii);
-					//~val1 = ~charArray.collect(_.digit).convertDigits;
-					~val1 = ~drums.choose;      // RANDOM CHOOSER
-					~val1.postln;
-					switch (~val1,
-
-						~kickIndex, {var kick;
-							kick = Synth(\kc, [\start, ~start_temp, \amp, ~amp_kc_temp]);
-							kick.play;
-						},
-
-						~snareIndex, {var snare;
-							snare = Synth(\sn, [\sinfreq, ~sinfreq_temp, \ffreq, ~ffreq_sn_temp, \amp, ~amp_sn_temp ]);
-							snare.play;
-						},
-
-						~hihatIndex, {var hit_hat;
-							hit_hat = Synth(\hh, [\q, ~q_temp, \ffreq, ~ffreq_hh_temp, \amp, ~amp_hh_temp]);
-							hit_hat.play;
-						},
-
-						~clapIndex, {var clap;
-							clap = Synth(\ce, [\value, ~value_temp, \amp, ~amp_clap_temp]);
-							clap.play;
-						},
-
-						~tomIndex, {var tom;
-							tom = Synth(\tom, [\pitchRel, ~pitchRel_temp, \startPitch, ~startPitch_temp, \amp, ~amp_tom_temp]);
-							tom.play;
-						}
-					);
-
-					/////////////////////////////////////// FIND A WAY TO PLAY THE RIGHT PERCUSSION
 				},
 
-				~sonar, { state = ~sonar; },
+				~sonar, {
+					state = ~sonar;
+					~charArray = [ ];
+				},
 
-				~fotoResistor, { state = ~fotoResistor; },
+				~fotoResistor, {
+					state = ~fotoResistor;
+					~charArray = [ ];
+				},
 
-				~potentiometer, { state = ~potentiometer; }
+				~potentiometer, {
+					state = ~potentiometer;
+					~charArray = [ ];
+				}
+			);
+
+			ascii = ~port.read.asAscii;
+
+			//Check if command end
+			while (ascii != ~commandTerminator,
+				{
+					~charArray.add(ascii);
+					ascii = ~port.read.asAscii;
+				}
+			);
+
+			//Check if there are read values
+			if ( ~charArray.size > 0,
+				{
+					~val1 = ~charArray.collect(_.digit).convertDigits;
+					//~val1 = ~drums.choose;
+					switch(state,
+						~playCommand, {
+							switch (~val1,
+
+								~kickIndex, {var kick;
+									kick = Synth(\kc, [\start, ~start_temp, \amp, ~amp_kc_temp]);
+									kick.play;
+								},
+
+								~snareIndex, {var snare;
+									snare = Synth(\sn, [\sinfreq, ~sinfreq_temp, \ffreq, ~ffreq_sn_temp, \amp, ~amp_sn_temp ]);
+									snare.play;
+								},
+
+								~hihatIndex, {
+									var hit_hat;
+									hit_hat = Synth(\hh, [\q, ~q_temp, \ffreq, ~ffreq_hh_temp, \amp, ~amp_hh_temp]);
+									hit_hat.play;
+								},
+
+								~clapIndex, {var clap_e;
+									clap_e = Synth(\ce, [\value, ~value_temp, \amp, ~amp_clap_e_temp]);
+									clap_e.play;
+								},
+
+								~tomIndex, {var tom;
+									tom = Synth(\tom, [\pitchRel, ~pitchRel_temp, \startPitch, ~startPitch_temp, \amp, ~amp_tom_temp]);
+									tom.play;
+								}
+							);
+						},
+						~sonar, {},
+						~fotoResistor, {},
+						~potentiometer, {}
+					)
+
+				}
 			);
 		}.loop;
+
 	}
 ).play;
 )
