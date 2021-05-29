@@ -304,10 +304,12 @@ knob_names[4,1] = StaticText(drum_kit_win,Rect(40+455,200+120,90,30)).string_("A
 ~charArray = [ ];
 
 //Hardware range values
-~fotoresistorMin;
-~fotoresistorMax;
-~potentiometerMin;
-~potentiometerMax;
+~fotoresistorMin = 0;
+~fotoresistorMax = 680;
+~potentiometerMin = 0;
+~potentiometerMax = 680;
+~kPotentiometerMin = 0;
+~kPotentiometerMax = 500;
 
 ~kickIndex = 1;
 ~snareIndex = 2;
@@ -457,7 +459,7 @@ SerialPort.devices;
 						~potentiometer2, {
 							var value;
 							~val1 = ~charArray.collect(_.digit).convertDigits;
-							value = ~val1.linexp(~potentiometerMin, ~potentiometerMax, 0.01, 1);
+							value = ~val1.linexp(~kPotentiometerMin, ~kPotentiometerMax, 0.01, 1);
 							~charArray = [ ];
 						}
 					)
