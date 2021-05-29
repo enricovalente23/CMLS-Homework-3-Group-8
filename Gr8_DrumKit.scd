@@ -1,39 +1,4 @@
-s.options.numInputBusChannels.postln;
-~numSamples = 4;
-~numChannels = ~numSamples*2;
-
-//DEFINE SAMPLE PATHS
-(
-~kickSamplePath = "D:/Polidocumenti/Anno 5/CMLS/HW3/Gr8_DrumKit/Samples/Kick.wav";
-~clapSamplePath = "D:/Polidocumenti/Anno 5/CMLS/HW3/Gr8_DrumKit/Samples/Clap.wav";
-~openHiHatSamplePath = "D:/Polidocumenti/Anno 5/CMLS/HW3/Gr8_DrumKit/Samples/909 OH.wav";
-)
-
-//LOAD
-(
-~kick = Buffer.read(s, ~kickSamplePath);
-~clap = Buffer.read(s, ~clapSamplePath);
-~openHiHat = Buffer.read(s, ~openHiHatSamplePath);
-)
-
-//PLAY
-~kick.plot;
-~clap.plot;
-~openHiHat.plot;
-
-~kick.play;
-~openHiHat.play;
-~clap.play;
-
-~bus = Bus.audio(s, ~numChannels);
-
-~loadSample = {
-	arg samplePath;
-	Buffer.read(s, samplePath);
-};
-
-~kick = Buffer.read(s, ~kickSamplePath);
-~kick.plot;
+// *-- Drum Set --* //
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////--- SYNTH BANK ---/////////////////////////////////////////////////////////////
@@ -44,7 +9,7 @@ s.options.numInputBusChannels.postln;
 // ---hi hat --- //
 
 SynthDef("hh", {
-    arg noiseRel = 0.25380977392197, noiseLevel=0.18370378851891, ffreq=9853, q=0.59219532012939, amp=0.3;
+    arg noiseRel = 0.25, noiseLevel=0.2, ffreq=9853, q=0.6, amp=0.3;
     var noiseOsc = BBandPass.ar(PinkNoise.ar(), ffreq, q);
 	var noiseEnv = EnvGen.ar(Env.perc(0.01, noiseRel), doneAction: 2);
     var snd = noiseOsc * noiseEnv * 6*amp;
@@ -121,7 +86,7 @@ SynthDef("ce", {
 // --- tom --- //
 
 SynthDef("tom", {
-    arg startPitch = 1000, endPitch=60, clickLevel=0.7, pitchRel = 0.11, noiseLevel=1, noiseRel= 0.3, amp=0.1;
+    arg startPitch = 1000, endPitch=60, clickLevel=0.7, pitchRel = 0.36, noiseLevel=1, noiseRel= 0.3, amp=0.1;
     var pitchEnv = EnvGen.ar(Env.perc(0.01, pitchRel));
 
     var clickOsc = SinOsc.ar(pitchEnv*(startPitch-endPitch)+endPitch);
@@ -140,12 +105,12 @@ SynthDef("tom", {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-MIDIClient.init;
+//MIDIClient.init;
 
-MIDIIn.connectAll;
+//MIDIIn.connectAll;
 
 (
-var hh, sn, kc, ce, tom, knob_names, buttons4keys, drum_kit_win;
+var hh, sn, kc, ce, tom, knob_names, drum_kit_win;
 var hh_knobs, sn_knobs, kc_knobs, ce_knobs, tom_knobs;
 
 ~kickIndex = 1;
@@ -154,31 +119,27 @@ var hh_knobs, sn_knobs, kc_knobs, ce_knobs, tom_knobs;
 ~clapIndex = 4;
 ~tomIndex = 5;
 
-//~q_temp = 0.6;            //removed
 ~ffreq_hh_temp = 9850;
 ~amp_hh_temp = 0.125;
 
 ~sinfreq_temp = 180;
-//~ffreq_sn_temp = 2000;      //removed
 ~amp_sn_temp = 0.25;
 
 ~start_temp = 475;
 ~amp_kc_temp = 0.5;
 
 ~value_temp = 7600;
-~amp_clap_temp = 0.25;
+~amp_clap_temp = 0.125;
 
 ~startPitch_temp = 125;
-//~pitchRel_temp = 0.360;     //removed
 ~amp_tom_temp = 0.25;
 
 ~keys2synth;
 
 knob_names = Array2D.new(5, 3);
-buttons4keys = Array.newClear(5);
 ~keys2synth = Array.newClear(5);
 
-drum_kit_win = Window.new(name: "Drum Set", bounds: Rect(100,200,580,430)).background_(Color.grey(0.7)).front;
+drum_kit_win = Window.new(name: "Drum Set", bounds: Rect(100,200,580,340)).background_(Color.grey(0.7)).front;
 
 drum_kit_win.view.keyDownAction = {
 	arg view, char, modifiers, unicode, keycode;
@@ -202,17 +163,6 @@ x = case
 ///////////////////////////////////// hit-hat /////////////////////////////////////
 
 hh = Button.new(drum_kit_win,Rect(30,10,80,80)).states_([["Hi-Hat", Color.black, Color.fromHexString("A1E7F0")]]);
-buttons4keys[0] = Button.new(drum_kit_win,Rect(30,380,80,40)).states_([["Assign",Color.black, Color.fromHexString("A1E7F0")]]);
-
-buttons4keys[0].mouseDownAction = {
-	v = Window.new(name: "Press a key to save it", bounds:Rect(500, 500,500,100)).front;
-	t = StaticText(v,Rect(200,10,500,50)).string_("HIT-HAT");
-	v.view.keyDownAction = {
-		arg view, char, modifiers, unicode, keycode;
-		[char, keycode].postln;
-		~keys2synth[0] = keycode;
-		};
-};
 
 hh.mouseDownAction = {
 	var hit_hat;
@@ -221,35 +171,24 @@ hh.mouseDownAction = {
 
 hh_knobs = Array.newClear(2);
 
-hh_knobs[0] = Knob(drum_kit_win,Rect(30,130,80,80));
+hh_knobs[0] = Knob(drum_kit_win,Rect(30,100,80,80));
 hh_knobs[0].value = 9850/15000;
 hh_knobs[0].action = {~ffreq_hh_temp = hh_knobs[0].value.linlin(0, 1, 100, 15000);
 						postln(~ffreq_hh_temp);
 					};
-knob_names[0,0] = StaticText(drum_kit_win,Rect(35+15,200,90,30)).string_("F_FREQ");
+knob_names[0,0] = StaticText(drum_kit_win,Rect(35+15,175,90,30)).string_("F_FREQ");
 
-hh_knobs[1] = Knob(drum_kit_win,Rect(30,250,80,80));
+hh_knobs[1] = Knob(drum_kit_win,Rect(30,220,80,80));
 hh_knobs[1].value = 0.3/3;
 hh_knobs[1].action = {~amp_hh_temp = hh_knobs[1].value.linexp(0, 1, 0.01, 3);
 						postln(~amp_hh_temp);
 					};
-knob_names[0,1] = StaticText(drum_kit_win,Rect(40+15,200+120,90,30)).string_("AMP");
+knob_names[0,1] = StaticText(drum_kit_win,Rect(40+15,175+120,90,30)).string_("AMP");
 
 
 ///////////////////////////////////// snare /////////////////////////////////////
 
 sn = Button.new(drum_kit_win,Rect(140,10,80,80)).states_([["Snare",Color.black, Color.fromHexString("64C5D7")]]);
-buttons4keys[1] = Button.new(drum_kit_win,Rect(140,380,80,40)).states_([["Assign",Color.black, Color.fromHexString("64C5D7")]]);
-
-buttons4keys[1].mouseDownAction = {
-	v = Window.new(name: "Press a key to save it", bounds:Rect(500, 500,500,100)).front;
-	t = StaticText(v,Rect(200,10,500,50)).string_("SNARE");
-	v.view.keyDownAction = {
-		arg view, char, modifiers, unicode, keycode;
-		[char, keycode].postln;
-		~keys2synth[1] = keycode;
-		};
-};
 
 sn.mouseDownAction = {
 	var snare;
@@ -257,35 +196,24 @@ sn.mouseDownAction = {
 };
 sn_knobs = Array.newClear(2);
 
-sn_knobs[0] = Knob(drum_kit_win,Rect(140,130,80,80));
+sn_knobs[0] = Knob(drum_kit_win,Rect(140,100,80,80));
 sn_knobs[0].value = 180/1000;
 sn_knobs[0].action = {~sinfreq_temp = sn_knobs[0].value.linlin(0, 1, 0, 1000);
 						postln(~sinfreq_temp);
 					};
-knob_names[1,0] = StaticText(drum_kit_win,Rect(25+125,200,90,30)).string_("SIN_FREQ");
+knob_names[1,0] = StaticText(drum_kit_win,Rect(25+125,175,90,30)).string_("SIN_FREQ");
 
-sn_knobs[1] = Knob(drum_kit_win,Rect(140,250,80,80));
+sn_knobs[1] = Knob(drum_kit_win,Rect(140,220,80,80));
 sn_knobs[1].value = 0.1/2;
 sn_knobs[1].action = {~amp_sn_temp = sn_knobs[1].value.linexp(0, 1, 0.01, 2);
 						postln(~amp_sn_temp);
 					};
-knob_names[1,1] = StaticText(drum_kit_win,Rect(40+125,200+120,90,30)).string_("AMP");
+knob_names[1,1] = StaticText(drum_kit_win,Rect(40+125,175+120,90,30)).string_("AMP");
 
 
 ///////////////////////////////////// kick /////////////////////////////////////
 
 kc = Button.new(drum_kit_win,Rect(250,10,80,80)).states_([["Kick",Color.black, Color.fromHexString("3399BD")]]);
-buttons4keys[2] = Button.new(drum_kit_win,Rect(250,380,80,40)).states_([["Assign",Color.black, Color.fromHexString("3399BD")]]);
-
-buttons4keys[2].mouseDownAction = {
-	v = Window.new(name: "Press a key to save it", bounds:Rect(500, 500,500,100)).front;
-	t = StaticText(v,Rect(200,10,500,50)).string_("KICK");
-	v.view.keyDownAction = {
-		arg view, char, modifiers, unicode, keycode;
-		[char, keycode].postln;
-		~keys2synth[2] = keycode;
-		};
-};
 
 kc.mouseDownAction = {
 	var kick;
@@ -293,35 +221,24 @@ kc.mouseDownAction = {
 };
 kc_knobs = Array.newClear(2);
 
-kc_knobs[0] = Knob(drum_kit_win,Rect(250,130,80,80));
+kc_knobs[0] = Knob(drum_kit_win,Rect(250,100,80,80));
 kc_knobs[0].value = 472/2000;
 kc_knobs[0].action = {~start_temp = kc_knobs[0].value.linlin(0, 1, 40, 2000);
 						postln(~start_temp);
 					};
-knob_names[2,0] = StaticText(drum_kit_win,Rect(18+235,200,90,30)).string_("START_FREQ");
+knob_names[2,0] = StaticText(drum_kit_win,Rect(18+235,175,90,30)).string_("START_FREQ");
 
-kc_knobs[1] = Knob(drum_kit_win,Rect(250,250,80,80));
+kc_knobs[1] = Knob(drum_kit_win,Rect(250,220,80,80));
 kc_knobs[1].value = 0.1/2;
 kc_knobs[1].action = {~amp_kc_temp = kc_knobs[1].value.linexp(0, 1, 0.01, 2);
 						postln(~amp_kc_temp);
 					};
-knob_names[2,1] = StaticText(drum_kit_win,Rect(40+235,200+120,90,30)).string_("AMP");
+knob_names[2,1] = StaticText(drum_kit_win,Rect(40+235,175+120,90,30)).string_("AMP");
 
 
 ///////////////////////////////////// clap /////////////////////////////////////
 
 ce = Button.new(drum_kit_win,Rect(360,10,80,80)).states_([["Clap",Color.black, Color.fromHexString("206A9D")]]);
-buttons4keys[3] = Button.new(drum_kit_win,Rect(360,380,80,40)).states_([["Assign",Color.black, Color.fromHexString("206A9D")]]);
-
-buttons4keys[3].mouseDownAction = {
-	v = Window.new(name: "Press a key to save it", bounds:Rect(500, 500,500,100)).front;
-	t = StaticText(v,Rect(200,10,500,50)).string_("CLAP");
-	v.view.keyDownAction = {
-		arg view, char, modifiers, unicode, keycode;
-		[char, keycode].postln;
-		~keys2synth[3] = keycode;
-		};
-};
 
 ce.mouseDownAction = {
 	var clap;
@@ -329,35 +246,24 @@ ce.mouseDownAction = {
 };
 ce_knobs = Array.newClear(2);
 
-ce_knobs[0] = Knob(drum_kit_win,Rect(360,130,80,80));
+ce_knobs[0] = Knob(drum_kit_win,Rect(360,100,80,80));
 ce_knobs[0].value = 7600/9000;
 ce_knobs[0].action = {~value_temp = ce_knobs[0].value.linlin(0, 1, 200, 9000);
 						postln(~value_temp);
 					};
-knob_names[3,0] = StaticText(drum_kit_win,Rect(15+345,200,90,30)).string_("VALUE_FREQ");
+knob_names[3,0] = StaticText(drum_kit_win,Rect(15+345,175,90,30)).string_("VALUE_FREQ");
 
-ce_knobs[1] = Knob(drum_kit_win,Rect(360,250,80,80));
+ce_knobs[1] = Knob(drum_kit_win,Rect(360,220,80,80));
 ce_knobs[1].value = 0.5/3.5;
 ce_knobs[1].action = {~amp_clap_temp = ce_knobs[1].value.linexp(0, 1, 0.01, 3.5);
 						postln(~amp_clap_temp);
 					};
-knob_names[3,1] = StaticText(drum_kit_win,Rect(40+345,200+120,90,30)).string_("AMP");
+knob_names[3,1] = StaticText(drum_kit_win,Rect(40+345,175+120,90,30)).string_("AMP");
 
 
 ///////////////////////////////////// tom /////////////////////////////////////
 
 tom = Button.new(drum_kit_win,Rect(470,10,80,80)).states_([["Tom",Color.black, Color.fromHexString("004C8D")]]);
-buttons4keys[4] = Button.new(drum_kit_win,Rect(470,380,80,40)).states_([["Assign",Color.black, Color.fromHexString("004C8D")]]);
-
-buttons4keys[4].mouseDownAction = {
-	v = Window.new(name: "Press a key to save it", bounds:Rect(500, 500,500,100)).front;
-	t = StaticText(v,Rect(200,10,500,50)).string_("TOM");
-	v.view.keyDownAction = {
-		arg view, char, modifiers, unicode, keycode;
-		[char, keycode].postln;
-		~keys2synth[4] = keycode;
-		};
-};
 
 tom.mouseDownAction = {
 	var tom;
@@ -365,20 +271,62 @@ tom.mouseDownAction = {
 };
 tom_knobs = Array.newClear(2);
 
-tom_knobs[0] = Knob(drum_kit_win,Rect(470,130,80,80));
+tom_knobs[0] = Knob(drum_kit_win,Rect(470,100,80,80));
 tom_knobs[0].value = 1000/3000;
 tom_knobs[0].action = {~startPitch_temp = tom_knobs[0].value.linlin(0, 1, 100, 3000);
 						postln(~startPitch_temp);
 					};
-knob_names[4,0] = StaticText(drum_kit_win,Rect(18+455,200,90,30)).string_("START_PITCH");
+knob_names[4,0] = StaticText(drum_kit_win,Rect(18+455,175,90,30)).string_("START_PITCH");
 
-tom_knobs[1] = Knob(drum_kit_win,Rect(470,250,80,80));
+tom_knobs[1] = Knob(drum_kit_win,Rect(470,220,80,80));
 tom_knobs[1].value = 0.1/3;
 tom_knobs[1].action = {~amp_tom_temp = tom_knobs[1].value.linexp(0, 1, 0.01, 3);
 						postln(~amp_tom_temp);
 					};
-knob_names[4,1] = StaticText(drum_kit_win,Rect(40+455,200+120,90,30)).string_("AMP");
+knob_names[4,1] = StaticText(drum_kit_win,Rect(40+455,175+120,90,30)).string_("AMP");
 
+)
+
+
+////////// UMUT ///////////
+
+
+(
+var window, size = 80; // try different sizes - from 15 to 200 or more!
+var param1, param2, param3, b1, b2, b3;
+window = Window.new("Monitor", Rect(640,630,300,230)).front;
+param1 = Knob.new(window, Rect(20, 10, size, size));
+param2 = Knob.new(window, Rect(30+size, 10, size, size));
+param3 = Knob.new(window, Rect(20+size*2, 10, size, size));
+
+param1.value=0.1;
+param2.value=0.1;
+param3.value=0.1;
+
+StaticText(window,Rect(40, size-15, size, size)).string_("param1");
+StaticText(window,Rect(50+size, size-15, size, size)).string_("param2");
+StaticText(window,Rect(60+(size*2), size-15, size, size)).string_("param3");
+
+b1 = Button(window, Rect(20, size*2-30, size, size))
+.states_([
+            ["Kick", Color.black, Color.fromHexString("A1E7F0")],
+        ])
+        .action_({ arg butt;
+            butt.value.postln;
+        });
+b2 = Button(window, Rect(30+size, size*2-30, size, size))
+ .states_([
+            ["Snare", Color.black, Color.fromHexString("3399BD")],
+        ])
+        .action_({ arg butt;
+            butt.value.postln;
+        });
+b3 = Button(window, Rect(40+(size*2), size*2-30, size, size)) .states_([
+            ["Whatever", Color.black, Color.fromHexString("004C8D")],
+        ])
+        .action_({ arg butt;
+            butt.value.postln;
+        });
 )
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
