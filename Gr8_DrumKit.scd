@@ -107,7 +107,11 @@ SynthDef("tom", {
 
 (
 var hh, sn, kc, ce, tom, knob_names, drum_kit_win;
-var hh_knobs, sn_knobs, kc_knobs, ce_knobs, tom_knobs;
+~hh_knobs;
+~sn_knobs;
+~kc_knobs;
+~ce_knobs;
+~tom_knobs;
 
 ~kickIndex = 1;
 ~snareIndex = 2;
@@ -165,18 +169,18 @@ hh.mouseDownAction = {
 	hit_hat = Synth(\hh, [\ffreq, ~ffreq_hh_temp, \amp, ~amp_hh_temp]);
 };
 
-hh_knobs = Array.newClear(2);
+~hh_knobs = Array.newClear(2);
 
-hh_knobs[0] = Knob(drum_kit_win,Rect(30,130,80,80));
-hh_knobs[0].value = 9850/15000;
-hh_knobs[0].action = {~ffreq_hh_temp = hh_knobs[0].value.linlin(0, 1, 100, 15000);
+~hh_knobs[0] = Knob(drum_kit_win,Rect(30,130,80,80));
+~hh_knobs[0].value = ~ffreq_hh_temp/15000;
+~hh_knobs[0].action = {~ffreq_hh_temp = ~hh_knobs[0].value.linlin(0, 1, 100, 15000);
 						postln(~ffreq_hh_temp);
 					};
 knob_names[0,0] = StaticText(drum_kit_win,Rect(35+5,200,90,30)).string_("HH_Freq");
 
-hh_knobs[1] = Knob(drum_kit_win,Rect(30,250,80,80));
-hh_knobs[1].value = 0.3/3;
-hh_knobs[1].action = {~amp_hh_temp = hh_knobs[1].value.linexp(0, 1, 0.01, 3);
+~hh_knobs[1] = Knob(drum_kit_win,Rect(30,250,80,80));
+~hh_knobs[1].value = ~amp_hh_temp/3;
+~hh_knobs[1].action = {~amp_hh_temp = ~hh_knobs[1].value.linexp(0, 1, 0.01, 3);
 						postln(~amp_hh_temp);
 					};
 knob_names[0,1] = StaticText(drum_kit_win,Rect(40+15,200+120,90,30)).string_("AMP");
@@ -190,18 +194,19 @@ sn.mouseDownAction = {
 	var snare;
 	snare = Synth(\sn, [\sinfreq, ~sinfreq_temp, \amp, ~amp_sn_temp]);
 };
-sn_knobs = Array.newClear(2);
 
-sn_knobs[0] = Knob(drum_kit_win,Rect(140,130,80,80));
-sn_knobs[0].value = 180/1000;
-sn_knobs[0].action = {~sinfreq_temp = sn_knobs[0].value.linlin(0, 1, 0, 1000);
+~sn_knobs = Array.newClear(2);
+
+~sn_knobs[0] = Knob(drum_kit_win,Rect(140,130,80,80));
+~sn_knobs[0].value = ~sinfreq_temp/1000;
+~sn_knobs[0].action = {~sinfreq_temp = ~sn_knobs[0].value.linlin(0, 1, 0, 1000);
 						postln(~sinfreq_temp);
 					};
 knob_names[1,0] = StaticText(drum_kit_win,Rect(25+120,200,90,30)).string_("SN_Release");
 
-sn_knobs[1] = Knob(drum_kit_win,Rect(140,250,80,80));
-sn_knobs[1].value = 0.1/2;
-sn_knobs[1].action = {~amp_sn_temp = sn_knobs[1].value.linexp(0, 1, 0.01, 2);
+~sn_knobs[1] = Knob(drum_kit_win,Rect(140,250,80,80));
+~sn_knobs[1].value = ~amp_sn_temp/2;
+~sn_knobs[1].action = {~amp_sn_temp = ~sn_knobs[1].value.linexp(0, 1, 0.01, 2);
 						postln(~amp_sn_temp);
 					};
 knob_names[1,1] = StaticText(drum_kit_win,Rect(40+125,200+120,90,30)).string_("AMP");
@@ -215,18 +220,18 @@ kc.mouseDownAction = {
 	var kick;
 	kick = Synth(\kc, [\start, ~start_temp, \amp, ~amp_kc_temp]);
 };
-kc_knobs = Array.newClear(2);
+~kc_knobs = Array.newClear(2);
 
-kc_knobs[0] = Knob(drum_kit_win,Rect(250,130,80,80));
-kc_knobs[0].value = 472/2000;
-kc_knobs[0].action = {~start_temp = kc_knobs[0].value.linlin(0, 1, 40, 2000);
+~kc_knobs[0] = Knob(drum_kit_win,Rect(250,130,80,80));
+~kc_knobs[0].value = ~start_temp/2000;
+~kc_knobs[0].action = {~start_temp = ~kc_knobs[0].value.linlin(0, 1, 40, 2000);
 						postln(~start_temp);
 					};
 knob_names[2,0] = StaticText(drum_kit_win,Rect(18+245,200,90,30)).string_("Kick_Freq");
 
-kc_knobs[1] = Knob(drum_kit_win,Rect(250,250,80,80));
-kc_knobs[1].value = 0.1/2;
-kc_knobs[1].action = {~amp_kc_temp = kc_knobs[1].value.linexp(0, 1, 0.01, 2);
+~kc_knobs[1] = Knob(drum_kit_win,Rect(250,250,80,80));
+~kc_knobs[1].value = ~amp_kc_temp/2;
+~kc_knobs[1].action = {~amp_kc_temp = ~kc_knobs[1].value.linexp(0, 1, 0.01, 2);
 						postln(~amp_kc_temp);
 					};
 knob_names[2,1] = StaticText(drum_kit_win,Rect(40+235,200+120,90,30)).string_("AMP");
@@ -240,18 +245,18 @@ ce.mouseDownAction = {
 	var clap;
 	clap = Synth(\ce, [\value, ~value_temp, \amp, ~amp_clap_temp]);
 };
-ce_knobs = Array.newClear(2);
+~ce_knobs = Array.newClear(2);
 
-ce_knobs[0] = Knob(drum_kit_win,Rect(360,130,80,80));
-ce_knobs[0].value = 7600/9000;
-ce_knobs[0].action = {~value_temp = ce_knobs[0].value.linlin(0, 1, 200, 9000);
+~ce_knobs[0] = Knob(drum_kit_win,Rect(360,130,80,80));
+~ce_knobs[0].value = ~value_temp/9000;
+~ce_knobs[0].action = {~value_temp = ~ce_knobs[0].value.linlin(0, 1, 200, 9000);
 						postln(~value_temp);
 					};
 knob_names[3,0] = StaticText(drum_kit_win,Rect(15+350,200,90,30)).string_("Clap_Freq");
 
-ce_knobs[1] = Knob(drum_kit_win,Rect(360,250,80,80));
-ce_knobs[1].value = 0.5/3.5;
-ce_knobs[1].action = {~amp_clap_temp = ce_knobs[1].value.linexp(0, 1, 0.01, 3.5);
+~ce_knobs[1] = Knob(drum_kit_win,Rect(360,250,80,80));
+~ce_knobs[1].value = ~amp_clap_temp/3.5;
+~ce_knobs[1].action = {~amp_clap_temp = ~ce_knobs[1].value.linexp(0, 1, 0.01, 3.5);
 						postln(~amp_clap_temp);
 					};
 knob_names[3,1] = StaticText(drum_kit_win,Rect(40+345,200+120,90,30)).string_("AMP");
@@ -265,18 +270,19 @@ tom.mouseDownAction = {
 	var tom;
 	tom = Synth(\tom, [\startPitch, ~startPitch_temp, \amp, ~amp_tom_temp]);
 };
-tom_knobs = Array.newClear(2);
 
-tom_knobs[0] = Knob(drum_kit_win,Rect(470,130,80,80));
-tom_knobs[0].value = 1000/3000;
-tom_knobs[0].action = {~startPitch_temp = tom_knobs[0].value.linlin(0, 1, 100, 3000);
+~tom_knobs = Array.newClear(2);
+
+~tom_knobs[0] = Knob(drum_kit_win,Rect(470,130,80,80));
+~tom_knobs[0].value = ~startPitch_temp/3000;
+~tom_knobs[0].action = {~startPitch_temp = ~tom_knobs[0].value.linlin(0, 1, 100, 3000);
 						postln(~startPitch_temp);
 					};
 knob_names[4,0] = StaticText(drum_kit_win,Rect(18+460,200,90,30)).string_("Tom_Start");
 
-tom_knobs[1] = Knob(drum_kit_win,Rect(470,250,80,80));
-tom_knobs[1].value = 0.1/3;
-tom_knobs[1].action = {~amp_tom_temp = tom_knobs[1].value.linexp(0, 1, 0.01, 3);
+~tom_knobs[1] = Knob(drum_kit_win,Rect(470,250,80,80));
+~tom_knobs[1].value = ~amp_tom_temp/3;
+~tom_knobs[1].action = {~amp_tom_temp = ~tom_knobs[1].value.linexp(0, 1, 0.01, 3);
 						postln(~amp_tom_temp);
 					};
 knob_names[4,1] = StaticText(drum_kit_win,Rect(40+455,200+120,90,30)).string_("AMP");
@@ -292,9 +298,16 @@ knob_names[4,1] = StaticText(drum_kit_win,Rect(40+455,200+120,90,30)).string_("A
 ~playCommand = $d;
 ~sonar = $s;
 ~fotoResistor = $f;
-~potentiometer = $p;
+~potentiometer1 = $p;
+~potentiometer2 = $k;
 ~commandTerminator = $t;
 ~charArray = [ ];
+
+//Hardware range values
+~fotoresistorMin;
+~fotoresistorMax;
+~potentiometerMin;
+~potentiometerMax;
 
 ~kickIndex = 1;
 ~snareIndex = 2;
@@ -302,7 +315,7 @@ knob_names[4,1] = StaticText(drum_kit_win,Rect(40+455,200+120,90,30)).string_("A
 ~clapIndex = 4;
 ~tomIndex = 5;
 
-~commands = [~playCommand, ~sonar, ~fotoResistor, ~potentiometer];
+~commands = [~playCommand, ~sonar, ~fotoResistor, ~potentiometer1, ~potentiometer2];
 ~drums = [~kickIndex, ~snareIndex, ~hihatIndex, ~clapIndex, ~tomIndex];
 )
 
@@ -349,8 +362,13 @@ SerialPort.devices;
 					ascii = ~port.read.asAscii;
 				},
 
-				~potentiometer, {
-					state = ~potentiometer;
+				~potentiometer1, {
+					state = ~potentiometer1;
+					~charArray = [ ];
+					ascii = ~port.read.asAscii;
+				},
+				~potentiometer2, {
+					state = ~potentiometer2;
 					~charArray = [ ];
 					ascii = ~port.read.asAscii;
 				}
@@ -376,46 +394,88 @@ SerialPort.devices;
 						~playCommand, {
 							switch (~val1,
 
-								~kickIndex, {var kick;
+								~kickIndex, {
+									var kick;
 									kick = Synth(\kc, [\start, ~start_temp, \amp, ~amp_kc_temp]);
 									//kick.play;
 								},
 
-								~snareIndex, {var snare;
+								~snareIndex, {
+									var snare;
 									snare = Synth(\sn, [\sinfreq, ~sinfreq_temp, \ffreq, ~ffreq_sn_temp, \amp, ~amp_sn_temp ]);
 									//snare.play;
 								},
 
-								~hihatIndex, {var hit_hat;
+								~hihatIndex, {
+									var hit_hat;
 									hit_hat = Synth(\hh, [\ffreq, ~ffreq_hh_temp, \amp, ~amp_hh_temp])
 									//hit_hat.play;
 								},
 
-								~clapIndex, {var clap;
+								~clapIndex, {
+									var clap;
 									clap = Synth(\ce, [\value, ~value_temp, \amp, ~amp_clap_temp]);
-									//clap.play;
+									//clap_e.play;
 								},
 
-								~tomIndex, {var tom;
+								~tomIndex, {
+									var tom;
 									tom = Synth(\tom, [\startPitch, ~startPitch_temp, \amp, ~amp_tom_temp]);
 									//tom.play;
 								}
 							);
 							~charArray = [ ];
 						},
-						~sonar, {~charArray = [ ];},
-						~fotoResistor, {~charArray = [ ];},
-						~potentiometer, {~charArray = [ ];}
+						~fotoResistor, {
+							var value;
+							~val1 = ~charArray.collect(_.digit).convertDigits;
+							value = ~val1.linexp(~fotoresistorMin, ~fotoresistorMax, 0.01, 1);
+							~charArray = [ ];
+						},
+						~potentiometer1, {
+							var value;
+							~val1 = ~charArray.collect(_.digit).convertDigits;
+							value = ~val1.linexp(~potentiometerMin, ~potentiometerMax, 0.01, 1);
+
+							~hh_knobs[1].value = value;
+							~amp_hh_temp = ~hh_knobs[1].value.linexp(0, 1, 0.01, 3);
+
+							~sn_knobs[1].value = value;
+							~amp_sn_temp = ~sn_knobs[1].value.linexp(0, 1, 0.01, 2);
+
+							~kc_knobs[1].value = value;
+							~amp_kc_temp = ~kc_knobs[1].value.linexp(0, 1, 0.01, 2);
+
+							~ce_knobs[1].value = value;
+							~amp_clap_temp = ~ce_knobs[1].value.linexp(0, 1, 0.01, 3.5);
+
+							~tom_knobs[1].value = value;
+							~tom_knobs[1].action = ~amp_tom_temp = ~tom_knobs[1].value.linexp(0, 1, 0.01, 3);
+
+							~charArray = [ ];
+						},
+						~potentiometer2, {
+							var value;
+							~val1 = ~charArray.collect(_.digit).convertDigits;
+							value = ~val1.linexp(~potentiometerMin, ~potentiometerMax, 0.01, 1);
+							~charArray = [ ];
+						}
 					)
+
 				},{}
 			);
 		}.loop;
+
 	}
 ).play;
 )
 
-~getValues.stop;
+(
+~val1 = 0.99;
+~val1.linexp(0, 1, 0.1, 880);
+)
 
+~getValues.stop;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////---IGNORE---////////////////////////////////////////////////////////////////////////
