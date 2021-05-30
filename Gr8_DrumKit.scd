@@ -296,14 +296,14 @@ knob_names[4,1] = StaticText(drum_kit_win,Rect(40+455,200+120,90,30)).string_("A
 //(
 ~playCommand = $d;
 ~fotoResistor = $f;
-~potentiometer1 = $p;
-~potentiometer2 = $k;
+~potentiometer1 = $k;
+~potentiometer2 = $p;
 ~commandTerminator = $t;
 ~charArray = [ ];
 
 //Hardware range values
-~fotoresistorMin = 60;
-~fotoresistorMax = 680;
+~fotoresistorMin = 200;
+~fotoresistorMax = 650;
 ~potentiometerMin = 0;
 ~potentiometerMax = 680;
 ~kPotentiometerMin = 0;
@@ -426,7 +426,7 @@ SerialPort.devices;
 						~potentiometer1, {
 							var value;
 							~val1 = ~charArray.collect(_.digit).convertDigits;
-							value = ~val1.linexp(~potentiometerMin, ~potentiometerMax, 0.01, 1);
+							value = ~val1.linexp(~kPotentiometerMin, ~kPotentiometerMax, 0.01, 1);
 							postln(~charArray);
 							postln(value);
 							//~hh_knobs[1].value = value;
@@ -444,7 +444,7 @@ SerialPort.devices;
 							var value;
 							~val1 = ~charArray.collect(_.digit).convertDigits;
 							postln("pot2");
-							value = ~val1.linexp(~kPotentiometerMin, ~kPotentiometerMax, 0.01, 1);
+							value = ~val1.linexp(~potentiometerMin, ~potentiometerMax, 0.01, 1);
 							//~sn_knobs[0].value = value;
 							~sinfreq_temp = value.linexp(0, 1, 80, 1000);
 							//~kc_knobs[0].value = value;
